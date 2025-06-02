@@ -6,10 +6,17 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-
+import { JWTStrategy } from './jwt.strategy';
+import { OtpModule } from 'src/otp/otp.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { EmailService } from 'src/email/email.service';
+import { EmailModule } from 'src/email/email.module';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
     imports:[
+        CacheModule.register(),
+        OtpModule,EmailModule,UserModule,
         MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),
         ConfigModule.forRoot({ isGlobal: true }),
         PassportModule.register({defaultStrategy: 'jwt'}),
@@ -26,6 +33,7 @@ import { AuthService } from './auth.service';
         }),
     ],
     controllers: [AuthController],
-    providers: [AuthService],
+    providers: [AuthService, JWTStrategy, EmailService],
+    exports: [JWTStrategy, PassportModule, EmailService],
 })
 export class AuthModule {}
