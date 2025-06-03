@@ -109,24 +109,51 @@ export class AuthService {
           }
     }
 
-    async resetPassword(token: string, passwordDto: PasswordDto) {
-        try {
-            const payload = this.jwtService.verify(token);
-            const user = await this.userService.findByEmail(payload.email); // or payload.sub/id
-    
-            if (!user) {
-                throw new NotFoundException('User not found');
-            }
-    
-            const hashed = await bcrypt.hash(passwordDto.newpassword, 10);
-            user.password = hashed;
-    
-            await this.userService.save(user);
-            return { message: 'Password updated successfully' };
-        } catch (error) {
-            throw new BadRequestException('Invalid or expired reset token');
+    async resetPassword( otp: string, passwordDto: PasswordDto) {
+        const user = await this.userService.findByEmail(passwordDto.email);
+        if (!user) {
+          throw new NotFoundException('User not found');
         }
+      
+        if (!user.resetOtp || user.resetOtp !== otp) {
+          throw new BadRequestException('Invalid reset OTP');
+        }
+      
+        if (!user.resetOtpExpiry || user.resetOtpExpiry < new Date()) {
+          throw new BadRequestException('Reset OTP expired');
+        }
+      
+        const hashed = await bcrypt.hash(passwordDto.newpassword, 10);
+        user.password = hashed;
+      
+        user.resetOtp = undefined;
+        user.resetOtpExpiry = undefined;
+      
+        await this.userService.save(user);
+        return { message: 'Password updated successfully' };
+      }
+      
+    
+    async requestPasswordReset(email: string) {
+        const user = await this.userService.findByEmail(email);
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+    
+        // Generate OTP
+        const otp = this.otpService.generateOtp(6);
+        console.log(otp)
+    
+        // Store OTP and expiry (e.g., 15 mins from now)
+        user.resetOtp = otp;
+        user.resetOtpExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+        await this.userService.save(user);
+    
+        // Send OTP by email
+        await this.emailService.sendPasswordResetEmail(user.email, otp);
+    
+        return { message: 'Password reset OTP sent to your email' };
     }
     
-    
+      
 }

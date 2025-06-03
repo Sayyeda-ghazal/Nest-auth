@@ -40,4 +40,21 @@ export class EmailService {
             throw new Error('Failed to send email'); // throw to controller
           }
         }
+
+        async sendPasswordResetEmail(email: string, otp: string) {
+          const html = `
+            <p>You requested a password reset</p>
+            <p>Your One-Time Password (OTP) is:</p>
+            <h2>${otp}</h2>
+            <p>This OTP will expire in 15 minutes.</p>
+            <p>If you did not request this, please ignore this email.</p>
+          `;
+      
+          await this.sendemail({
+            recipients: [email],
+            subject: 'Password Reset OTP',
+            html,
+          });
+      }
+      
 }

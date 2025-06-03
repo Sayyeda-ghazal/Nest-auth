@@ -1,26 +1,14 @@
 // src/user/user.module.ts
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '../user/user.entity';
+import { User, UserSchema } from './user.schema';
 import { UserService } from './user.service';
-import { AuthModule } from 'src/auth/auth.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'postgres', // Or your chosen DB
-      host: 'localhost',
-      port: 5432,
-      username: 'yourusername',
-      password: 'yourpassword',
-      database: 'yourdatabase',
-      entities: [__dirname + '/**/*.entity.{ts,js}'],
-      synchronize: true,  // only in dev
-    }),
-    UserModule,
-    AuthModule,
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }], 'DatabaseConnection'),
   ],
   providers: [UserService],
-  exports: [UserService], // ✅ Make it available to other modules
+  exports: [UserService], 
 })
 export class UserModule {}

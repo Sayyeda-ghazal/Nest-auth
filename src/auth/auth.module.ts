@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
 import { User, UserSchema } from './schemas/user.schema';
@@ -16,7 +16,7 @@ import { UserModule } from 'src/user/user.module';
 @Module({
     imports:[
         CacheModule.register(),
-        OtpModule,EmailModule,UserModule,
+        OtpModule,EmailModule,forwardRef(() => UserModule),
         MongooseModule.forFeature([{name: User.name, schema: UserSchema}]),
         ConfigModule.forRoot({ isGlobal: true }),
         PassportModule.register({defaultStrategy: 'jwt'}),

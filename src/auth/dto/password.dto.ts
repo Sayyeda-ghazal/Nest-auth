@@ -17,6 +17,7 @@ export class PasswordDto{
     @ValidateIf(o => o.action === PasswordAction.RESET)
     @IsString()
     forgotpassword: string
+    otp: string
 
     @ValidateIf(o => o.action === PasswordAction.RESET)
     @IsString()
