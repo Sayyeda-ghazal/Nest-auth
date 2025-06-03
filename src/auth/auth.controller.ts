@@ -3,7 +3,6 @@ import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
 import { PasswordDto } from './dto/password.dto';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -22,5 +21,4 @@ export class AuthController {
 async resetPassword(@Query('token') token: string, @Body() passwordDto: PasswordDto) {
     return this.authService.resetPassword(token, passwordDto);
 }
-
 }
