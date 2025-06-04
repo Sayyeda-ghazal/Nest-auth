@@ -140,16 +140,13 @@ export class AuthService {
             throw new NotFoundException('User not found');
         }
     
-        // Generate OTP
         const otp = this.otpService.generateOtp(6);
         console.log(otp)
     
-        // Store OTP and expiry (e.g., 15 mins from now)
         user.resetOtp = otp;
-        user.resetOtpExpiry = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+        user.resetOtpExpiry = new Date(Date.now() + 15 * 60 * 1000); 
         await this.userService.save(user);
     
-        // Send OTP by email
         await this.emailService.sendPasswordResetEmail(user.email, otp);
     
         return { message: 'Password reset OTP sent to your email' };

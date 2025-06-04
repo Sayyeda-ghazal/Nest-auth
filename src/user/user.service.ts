@@ -1,8 +1,8 @@
 // src/user/user.service.ts
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from './user.schema';
+import { User } from 'src/auth/schemas/user.schema';
 
 @Injectable()
 export class UserService {
@@ -22,5 +22,13 @@ export class UserService {
 
   async findById(id: string) {
     return this.userModel.findById(id).exec();
+  }
+
+  async ValidateUserbyId(userId){
+    const user = await this.userModel.findById(userId)
+    if(!user){
+        throw new NotFoundException("User not found")
+    }
+    return user;
   }
 }

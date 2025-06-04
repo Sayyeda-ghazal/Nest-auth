@@ -9,6 +9,7 @@ import { EmailModule } from './email/email.module';
 import { ConfigModule } from '@nestjs/config';
 import { OtpModule } from './otp/otp.module';
 import { UserModule } from './user/user.module';
+import { PostsModule } from './posts/posts.module';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { UserModule } from './user/user.module';
       connectionName: 'DatabaseConnection',
     }),
     AuthModule,
-    EmailModule, ConfigModule, OtpModule, UserModule],
+    EmailModule, ConfigModule, OtpModule, UserModule, PostsModule],
   controllers: [AppController],
   providers: [AppService],
 })
